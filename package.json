@@ -1,0 +1,43 @@
+{
+  "name": "organizadortareas",
+  "version": "1.0.0",
+  "description": "Gestor de tareas personales con avance por fases, escalable a soporte multiusuario y persistencia de datos.",
+  "keywords": [
+    "crud",
+    "tasks",
+    "javascript"
+  ],
+  "homepage": "https://github.com/JATeR912/JS_M6_M7_M8_organizadorTareas#readme",
+  "bugs": {
+    "url": "https://github.com/JATeR912/JS_M6_M7_M8_organizadorTareas/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JATeR912/JS_M6_M7_M8_organizadorTareas.git"
+  },
+  "license": "ISC",
+  "author": "JATeR",
+  "type": "commonjs",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "hbs": "^4.2.1",
+    "pg": "^8.23.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
