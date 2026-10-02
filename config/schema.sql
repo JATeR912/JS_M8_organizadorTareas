@@ -121,3 +121,10 @@ INSERT INTO tareas (nombre, estado, proyecto_id, fecha_creacion) VALUES
 ('Tomar medidas del ancho y alto de la ventana', true, 5, NOW()),
 ('Comprar tela jacquard y cinta para dobladillo', false, 5, NOW()),
 ('Coser dobladillos y colocar ganchos para riel', false, 5, NOW());
+
+
+
+--- POR DEFECTO, TODOS LOS USUARIOS SON 'user', CAMBIAR EL ROL DE UN USUARIO A 'admin' para probar rutas como /usuarios ya que entrega informacion de todos los usuarios
+UPDATE "usuarios" 
+SET rol = 'admin' 
+WHERE email = 'jose.gonzalez@mail.com';

@@ -22,13 +22,14 @@ async function loginUsuario(req, res) {
             return res.status(401).json({ ok: false, mensaje: 'Credenciales inválidas' });
         }
 
-        const payload = { id: usuario.id, email: usuario.email };
+        const payload = { id: usuario.id, email: usuario.email, rol: usuario.rol };
         const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
 
         return res.status(200).json({
             ok: true,
             mensaje: `Sesión iniciada correctamente. Bienvenido ${usuario.nombre}`,
-            token: token
+            token: token,
+            rol: usuario.rol || 'user'
         });
 
     } catch (error) {

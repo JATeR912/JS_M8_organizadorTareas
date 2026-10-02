@@ -17,3 +17,5 @@
 [2026-08-15T21:50:54.767Z] GET /
 [INFO] [2026-09-02T04:30:37.004Z] POST /usuarios/2/avance
 [ERROR] [2026-09-02T04:30:37.116Z] En registroAvanceTransaccion: Esta tarea pertenece a un proyecto que no te pertenece
+[INFO] [2026-10-02T21:11:40.078Z] POST /login
+[INFO] [2026-10-02T21:12:00.875Z] GET /usuarios
