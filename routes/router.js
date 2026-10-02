@@ -3,6 +3,8 @@ const router = express.Router();
 const { validarId } = require('../middleware/validarId');
 const {validarCrearUsuario, validarActualizarUsuario} = require('../middleware/validarUsuario');
 const { uploadFile } = require('../middleware/uploadFile');
+const { loginUsuario } = require('../controllers/controllerLoginSequelice');
+const { verificarToken } = require('../middleware/verificarToken');
 const { registroAvanceTransaccion } = require('../controllers/transaccionController');
 const { 
     getHome, 
@@ -28,11 +30,12 @@ const { getProyectosUsuarioById } = require('../controllers/controllerProyectoSe
 router.get('/', getHome);
 router.get('/Tareas', getTareas); 
 router.get('/status', getStatus);
+router.post('/login', loginUsuario);  //No funcional para pruebas con client
 
 // Rutas para usuarios
 router.post('/usuarios', validarCrearUsuario, postUsuario);
 router.get('/usuarios', getUsuarios);
-router.get('/usuarios/:id', validarId, getUsuarioById);
+router.get('/usuarios/:id', validarId, verificarToken, getUsuarioById);
 router.put('/usuarios/:id', validarId, validarActualizarUsuario, updateUsuarioById);
 router.delete('/usuarios/:id', validarId, deleteUsuarioById);
 

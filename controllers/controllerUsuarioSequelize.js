@@ -73,6 +73,14 @@ async function getUsuarios(req, res) {
 
 async function getUsuarioById(req, res) {
     const { id } = req.params;
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+    }
 
     try {
         const usuario = await Usuario.findByPk(id, {attributes: ['id', 'nombre', 'email', 'fecha_registro']});
