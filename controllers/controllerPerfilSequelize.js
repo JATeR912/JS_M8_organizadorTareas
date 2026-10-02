@@ -29,7 +29,7 @@ async function getPerfilUsuarioById(req, res) {
 
 async function postPerfil(req,res) {
     const { id } = req.params;
-    const { avatar_url, telefono, sobre_mi } = req.body;
+    const { telefono, sobre_mi } = req.body;
 
     try {
         const usuario = await Usuario.findByPk(id);
@@ -46,6 +46,9 @@ async function postPerfil(req,res) {
                 mensaje: 'El usuario ya tiene un perfil'
             });
         }
+
+        const avatar_url = req.file ? `/uploads/${req.file.filename}` : null;
+
         const perfil = await Perfil.create({ usuario_id: id, avatar_url, telefono, sobre_mi });
 
         res.status(201).json({

@@ -15,6 +15,9 @@ app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstra
 app.set('view engine', 'hbs');
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
+// Configuración de la carpeta de subida dearchivos 
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 // Helper para convertir la primera letra en mayúscula
 hbs.registerHelper('capitalize', function(texto) {
     return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();

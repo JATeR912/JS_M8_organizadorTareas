@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { validarId } = require('../middleware/validarId');
 const {validarCrearUsuario, validarActualizarUsuario} = require('../middleware/validarUsuario');
+const { uploadFile } = require('../middleware/uploadFile');
 const { registroAvanceTransaccion } = require('../controllers/transaccionController');
 const { 
     getHome, 
@@ -37,7 +38,7 @@ router.delete('/usuarios/:id', validarId, deleteUsuarioById);
 
 //Rutas para perfiles
 router.get('/usuarios/:id/perfil', validarId, getPerfilUsuarioById);  //No ejecutar para pruebas con client
-router.post('/usuarios/:id/perfil', validarId, postPerfil); //No ejecutar para pruebas con client
+router.post('/usuarios/:id/perfil', validarId, uploadFile(), postPerfil); //No ejecutar para pruebas con client
 router.put('/usuarios/:id/perfil', validarId, updatePerfilByUsuarioId); //No ejecutar para pruebas con client
 router.delete('/usuarios/:id/perfil', validarId, deletePerfilByUsuarioId); //No ejecutar para pruebas con client
 
