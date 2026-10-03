@@ -206,12 +206,17 @@ http://localhost:3000/ (o utilizando el puerto configurado en tu archivo .env: h
 | **PUT** | `/usuarios/:id/proyectos/:proyecto_id` | Actualiza campos del proyecto (`titulo`, `descripcion`, `privado`). | `validarId`, `verificarToken`, `updateProyectoByUsuarioId` |
 | **DELETE** | `/usuarios/:id/proyectos/:proyecto_id` | Elimina un proyecto específico perteneciente al usuario. | `validarId`, `verificarToken`, `deleteProyectoByUsuarioId` |
 
-### 5. Consultas y Transacciones SQL
+### 5. Gestión de Tareas (Consulta Relacional)
+| Método | Ruta | Descripción | Middleware / Control |
+| :--- | :--- | :--- | :--- |
+| **GET** | `/usuarios/:id/proyectos/:proyecto_id/tareas` | Consulta las tareas asociadas a un proyecto específico del usuario. | `validarId`, `verificarToken`, `getTareasByProyectoId` |
+
+### 6. Consultas y Transacciones SQL
 | Método | Ruta | Descripción | Middleware / Control |
 | :--- | :--- | :--- | :--- |
 | **POST** | `/usuarios/:id/avance` | Registra avance de tarea con transacción nativa (`Client`). | `validarId`, `verificarToken`, `registroAvanceTransaccion` |
 
-### 6. Control de Errores
+### 7. Control de Errores
 | Método | Ruta | Descripción | Respuesta |
 | :--- | :--- | :--- | :--- |
 | **ALL** | `*` | Captura de cualquier ruta no definida. | `getNotFound` (Vista 404 con HBS)|

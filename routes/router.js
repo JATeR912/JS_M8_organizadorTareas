@@ -4,7 +4,7 @@ const router = express.Router();
 const { validarId } = require('../middleware/validarId');
 const {validarCrearUsuario, validarActualizarUsuario} = require('../middleware/validarUsuario');
 const { uploadFile } = require('../middleware/uploadFile');
-const { loginUsuario } = require('../controllers/controllerLoginSequelice');
+const { loginUsuario } = require('../controllers/controllerLoginSequelize');
 const { verificarToken } = require('../middleware/verificarToken');
 const { esAdmin } = require('../middleware/esAdmin');
 // Controllers
@@ -33,6 +33,9 @@ const {
     updateProyectoByUsuarioId,
     deleteProyectoByUsuarioId
  } = require('../controllers/controllerProyectoSequelize');  //No funcional para pruebas con client
+const { 
+    getTareasByProyectoId
+} = require('../controllers/controllerTareaSequelize');  //No funcional para pruebas con client
 
 // Rutas
 router.get('/', getHome);
@@ -58,6 +61,9 @@ router.get('/usuarios/:id/proyectos', validarId, verificarToken, getProyectosUsu
 router.post('/usuarios/:id/proyectos', validarId, verificarToken, uploadFile(), postProyecto); //No ejecutar para pruebas con client
 router.put('/usuarios/:id/proyectos/:proyecto_id', validarId, verificarToken, updateProyectoByUsuarioId); //No ejecutar para pruebas con client
 router.delete('/usuarios/:id/proyectos/:proyecto_id', validarId, verificarToken, deleteProyectoByUsuarioId); //No ejecutar para pruebas con client
+
+// Rutas para tareas
+router.get('/usuarios/:id/proyectos/:proyecto_id/tareas', validarId, verificarToken, getTareasByProyectoId); //No ejecutar para pruebas con client
 
 // Rutas para transacciones
 router.post('/usuarios/:id/avance', validarId, verificarToken, registroAvanceTransaccion);
