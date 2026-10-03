@@ -119,5 +119,22 @@ Para garantizar la trazabilidad del sistema, se implementa un mecanismo centrali
 
 - **Manejo de respuestas y proyección de atributos:** En SQL nativo, la recuperación de registros recién insertados o actualizados requiere el uso explícito de la cláusula `RETURNING *`, además de listar manualmente cada columna en las sentencias `SELECT` si se desea limitar la respuesta. El ORM automatiza el retorno de las instancias persistidas y facilita la selección o exclusión explícita de campos mediante la propiedad attributes, simplificando la sanitización de datos sensibles como contraseñas o estados internos.
 
+## Justificación referente a apiRESTFUL
+
+Desiciones de proyecto para la actualizacion del proyecto:
+
+### ¿Cómo decidiste separar tus rutas y controladores?**
+En el proyecto existen dos enfoques de controladores: el primero, representado por `indexController.js` o `transaccionController.js`, maneja la conexión nativa a la base de datos para ejecutar transacciones complejas. El segundo enfoque utiliza Sequelize `controller[Tema]Sequelize.js` para gestionar la lógica CRUD de entidades específicas (como usuarios o perfiles). Adicionalmente, `controllerUsuarioSequelize.js` contiene funciones auxiliares (`getHome, getTareas, getStatus`) para mantener endpoints de prueba. Las rutas se centralizan en un único archivo con comentarios descriptivos para facilitar su lectura y mantenimiento.
+
+### ¿Qué validaciones realizaste antes de insertar/modificar datos?
+Se implementó un esquema de validación por capas mediante middlewares: `validarId` comprueba que los parámetros numéricos sean enteros positivos; `validarUsuario` verifica el formato y la presencia de campos obligatorios en el body; `verificarToken` confirma la validez del JWT; y `esAdmin` restringe accesos por rol. Adicionalmente, a nivel de controlador se valida la propiedad del recurso (comparando el id del parámetro contra el `usuarioAutenticadoId` extraído del token) antes de autorizar modificaciones.
+
+### ¿Por qué decidiste proteger esas rutas?
+Se aplicó el principio de mínimo privilegio. Las rutas globales como `GET /usuarios` se protegieron con el middleware `esAdmin` para evitar la exposición masiva de datos a usuarios comunes. Por su parte, los endpoints individuales de usuario (`/usuarios/:id`) requieren token de autenticación y verificación de pertenencia para impedir ataques de suplantación o acceso no autorizado a información de terceros.
+
+### ¿Dónde y cómo almacenas el token?**
+
+El servidor genera el token JWT y lo retorna al cliente dentro del cuerpo de la respuesta en el endpoint de login. En el cliente, este token se almacena en localStorage (o memoria) y se adjunta de forma explícita en el encabezado Authorization: Bearer <token> para cada petición protegida. Esta arquitectura RESTful mantiene la API de Express completamente stateless (sin estado), desacoplando la gestión de la sesión en el cliente de la validación de seguridad en el servidor.
+
 ### Referencias y Documentación
 * **Documentación Oficial Node Postgres (`pg.Client`):** https://node-postgres.com/apis/client

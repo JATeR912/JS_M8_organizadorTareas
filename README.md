@@ -4,7 +4,7 @@ Proyecto desarrollado para los Módulos 6, 7 y 8 del programa Talento Digital 20
 
 ## Descripción del Proyecto
 
-El presente proyecto corresponde al desarrollo progresivo de una aplicación web para la gestión y organización de tareas mediante operaciones CRUD y persistencia de datos mediante PostgreSQL y Sequelize ORM. Actualmente contempla la gestión relacional de usuarios, perfiles, proyectos y tareas, proyectando incorporar autenticación con JWT, subida de archivos y estandarización de API RESTful en entregas posteriores.
+El presente proyecto corresponde al desarrollo progresivo de una aplicación web para la gestión y organización de tareas mediante operaciones CRUD y persistencia de datos mediante PostgreSQL y Sequelize ORM. Actualmente contempla la gestión relacional de usuarios, perfiles, proyectos y tareas, autenticación con JWT y manejo de roles actualmente centrado en usuario y administrador, subida de archivos de imagen y estandarización de API RESTful.
 
 
 ## Arquitectura Utilizada
@@ -22,21 +22,25 @@ El sistema está construido bajo una arquitectura modular, separando responsabil
 /
 ├── config/
 │   └── db.js                           # Configuración de conexiones PostgreSQL y Sequelize
-│   └── queries.sql                     # Script de consultas SQL nativas
+│   └── schema.sql                      # Script de consultas SQL nativas
 ├── controllers/
 │   ├── indexController.js              # Controlador nativo con pg.Client
 │   ├── controllerUsuarioSequelize.js   # Controlador usuarios con ORM Sequelize
 │   ├── controllerPerfilSequelize.js    # Controlador perfiles con ORM Sequelize
 │   ├── controllerProyectoSequelize.js  # Controlador proyectos con ORM Sequelize
+│   ├── controllerLoginSequelize.js     # Controlador login para inicio de sesion y token con JWT
 │   └── transaccionController.js        # Controlador transaccion con pg.Client
 ├── doc/
-│   └── justificacionProyecto.md        # Justificación técnica y teórica completa (M6 y M7)
+│   └── justificacionProyecto.md        # Justificación técnica y teórica completa (M6, M7 y M8)
 ├── logs/
 │   └── log.txt                         # Registro de auditoría y errores del servidor
 ├── middleware/
+│   ├── esAdmin.js                      # Verifica el rol del usuario
 │   ├── logger.js                       # Registrar logs en archivo y consola
+│   ├── uploadFile.js                   # Validaciones subida de archivos de imagen
 │   ├── validarId.js                    # Validación de parámetros ID de ruta
-│   └── validarUsuario.js               # Validaciones de entrada para creación/edición
+│   ├── validarUsuario.js               # Validaciones de entrada para creación/edición
+│   └── verificarToken.js               # Verificar token
 ├── models/
 │   ├── usuario.js                      # Modelo Sequelize de Usuario
 │   ├── perfil.js                       # Modelo Sequelize de Perfil
@@ -45,8 +49,9 @@ El sistema está construido bajo una arquitectura modular, separando responsabil
 │   ├── logAvance.js                    # Modelo Sequelize de LogAvance (Tabla intermedia)
 │   └── modelsIndex.js                  # Centralizador y definición de relaciones ORM
 ├── public/
-│   └── css/
-│       └── style.css                   # Estilos CSS de la aplicación
+│   ├── css/
+│   │    └── style.css                  # Estilos CSS de la aplicación
+│   └── uploads                         # Carpeta para subida de archivos
 ├── routes/
 │   └── router.js                       # Definición de las rutas del sistema
 ├── views/
@@ -115,6 +120,35 @@ npm start
 node index.js
 ```
 
+### Autenticación e Instrucciones de Prueba
+
+Para probar las rutas protegidas mediante JWT en Thunder Client o Postman:
+
+1. **Obtención del Token (POST /login):**
+   Envía una petición POST a `http://localhost:3000/login` en formato JSON con las credenciales de cualquier usuario registrado:
+   ```json
+   Por ejemplo:
+   {
+     "email": "jose.gonzalez@mail.com",
+     "password": "contrasena1234"
+   }
+   ```
+   El servidor responderá con status 200 OK y entregará el token firmado en la respuesta JSON.
+
+2. **Uso del Token en Rutas Protegidas:**
+   Copia el token generado e ingrésalo en la pestaña Auth eligiendo el tipo Bearer Token para probar los endpoints privados (ej: GET /usuarios/:id).
+
+> **Nota importante sobre Pruebas de Rol Admin (GET /usuarios):**
+> * Por defecto, la creación de usuarios en Sequelize les asigna el rol 'user'.
+> * La ruta GET /usuarios requiere estrictamente el rol 'admin' (retornará 403 Forbidden a usuarios estándar).
+> * Si deseas probar el acceso de Administrador en este endpoint, debes actualizar el rol de tu usuario directamente en PostgreSQL ejecutando la consulta incluida al final del archivo `config/schema.sql`:
+>   
+>   ```sql
+>   UPDATE "Usuarios" SET rol = 'admin' WHERE email = 'jose.gonzalez@mail.com';
+>   ```
+>   
+> * Una vez actualizado el registro en la base de datos, vuelve a realizar el POST /login para obtener un token nuevo que incluya las credenciales de administrador en su payload.
+
 ### Configuración del Puerto (.env)
 
 El servidor admite la configuración de variables de entorno mediante un archivo .env(se recomienda usar ambas versiones en paralelo). Si no se define la variable PORT, el sistema tomará por defecto el puerto 3000.
@@ -131,33 +165,36 @@ DB_USER=usuarioDB
 DB_PASSWORD=contraseñaDB
 DB_HOST=localhost
 DB_PORT=5432
+
+JWT_SECRET=clave_secreta_super_secreta
 ```
 Una vez ejecutado el comando de inicio, accede desde tu navegador a:
 http://localhost:3000/ (o utilizando el puerto configurado en tu archivo .env: http://localhost:PORT/).
 
 ## Endpoints y Rutas del Sistema
 
-### 1. Vistas y Estado del Servidor
+### 1. Autenticación y Rutas Públicas
 | Método | Ruta | Descripción | Middleware / Control |
 | :--- | :--- | :--- | :--- |
-| **GET** | `/` | Vista de inicio con mensaje dinámico. | `getHome` |
-| **GET** | `/Tareas` | Vista principal del listado de tareas. | `getTareas` |
-| **GET** | `/status` | Retorna el estado del servidor y tiempo de actividad. | `getStatus` (JSON) |
+| **GET** | `/` | Vista/Respuesta principal. | `getHome` |
+| **GET** | `/Tareas` | Consulta lista general de tareas (datos de prueba). | `getTareas` |
+| **GET** | `/status` | Estado del servidor. | `getStatus` |
+| **POST** | `/login` | Inicia sesión y retorna un token JWT firmado. | `loginUsuario` |
 
 ### 2. Gestión de Usuarios (CRUD)
 | Método | Ruta | Descripción | Middleware / Control |
 | :--- | :--- | :--- | :--- |
-| **GET** | `/usuarios` | Obtiene el listado completo de usuarios. | `getUsuarios` |
-| **GET** | `/usuarios/:id` | Obtiene la información de un usuario específico. | `validarId`, `getUsuarioById` |
 | **POST** | `/usuarios` | Registra un nuevo usuario en la base de datos. | `validarCrearUsuario`, `postUsuario` |
+| **GET** | `/usuarios` | Obtiene el listado completo de usuarios (solo Administrador). | `verificarToken`, `esAdmin`, `getUsuarios` |
+| **GET** | `/usuarios/:id` | Obtiene la información de un usuario específico. | `validarId`, `verificarToken`, `getUsuarioById` |
 | **PUT** | `/usuarios/:id` | Actualiza campos permitidos (`nombre`, `email`) de un usuario. | `validarId`, `validarActualizarUsuario`, `updateUsuarioById` |
 | **DELETE** | `/usuarios/:id` | Elimina un usuario existente por su ID. | `validarId`, `deleteUsuarioById` |
 
-### 3. Gestión de Perfiles (CRUD Relacional 1:1)
+### 3. Gestión de Perfiles (CRUD Relacional 1:1 y Subida de Archivos)
 | Método | Ruta | Descripción | Middleware / Control |
 | :--- | :--- | :--- | :--- |
 | **GET** | `/usuarios/:id/perfil` | Consulta el perfil asociado a un usuario. | `validarId`, `getPerfilUsuarioById` |
-| **POST** | `/usuarios/:id/perfil` | Crea un nuevo perfil vinculado a un usuario. | `validarId`, `postPerfil` |
+| **POST** | `/usuarios/:id/perfil` | Crea un nuevo perfil e incrementa el archivo avatar con Multer. | `validarId`, `uploadFile()`, `postPerfil` |
 | **PUT** | `/usuarios/:id/perfil` | Actualiza campos del perfil (`avatar_url`, `telefono`, `sobre_mi`). | `validarId`, `updatePerfilByUsuarioId` |
 | **DELETE** | `/usuarios/:id/perfil` | Elimina el perfil de un usuario. | `validarId`, `deletePerfilByUsuarioId` |
 
@@ -165,12 +202,12 @@ http://localhost:3000/ (o utilizando el puerto configurado en tu archivo .env: h
 | Método | Ruta | Descripción | Middleware / Control |
 | :--- | :--- | :--- | :--- |
 | **GET** | `/usuarios/:id/proyectos` | Consulta proyectos vinculados al usuario (Relación 1:N). | `validarId`, `getProyectosUsuarioById` |
-| **POST** | `/usuarios/:id/avance` | Registra avance de tarea con transacción (`BEGIN`, `COMMIT`, `ROLLBACK`). | `validarId`, `registroAvanceTransaccion` |
+| **POST** | `/usuarios/:id/avance` | Registra avance de tarea con transacción nativa (`Client`). | `validarId`, `registroAvanceTransaccion` |
 
 ### 5. Control de Errores
 | Método | Ruta | Descripción | Respuesta |
 | :--- | :--- | :--- | :--- |
-| **ALL** | `*` | Captura de cualquier ruta no definida. | `getNotFound` (Vista 404 / JSON) |
+| **ALL** | `*` | Captura de cualquier ruta no definida. | `getNotFound` (Vista 404 con HBS)|
 
 <img width="1918" height="966" alt="image" src="https://github.com/user-attachments/assets/3b848dc2-1587-425d-a8f7-b57a2b9ee931" />
 
