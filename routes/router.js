@@ -27,7 +27,12 @@ const {
     updatePerfilByUsuarioId,
     deletePerfilByUsuarioId
  } = require('../controllers/controllerPerfilSequelize');  //No funcional para pruebas con client
-const { getProyectosUsuarioById } = require('../controllers/controllerProyectoSequelize');  //No funcional para pruebas con client
+const { 
+    getProyectosUsuarioById,
+    postProyecto,
+    updateProyectoByUsuarioId,
+    deleteProyectoByUsuarioId
+ } = require('../controllers/controllerProyectoSequelize');  //No funcional para pruebas con client
 
 // Rutas
 router.get('/', getHome);
@@ -49,7 +54,10 @@ router.put('/usuarios/:id/perfil', validarId, verificarToken, updatePerfilByUsua
 router.delete('/usuarios/:id/perfil', validarId, verificarToken, deletePerfilByUsuarioId); //No ejecutar para pruebas con client
 
 // Rutas para proyectos
-router.get('/usuarios/:id/proyectos', validarId, verificarToken, getProyectosUsuarioById); ///No ejecutar para pruebas con client
+router.get('/usuarios/:id/proyectos', validarId, verificarToken, getProyectosUsuarioById); //No ejecutar para pruebas con client
+router.post('/usuarios/:id/proyectos', validarId, verificarToken, uploadFile(), postProyecto); //No ejecutar para pruebas con client
+router.put('/usuarios/:id/proyectos/:proyecto_id', validarId, verificarToken, updateProyectoByUsuarioId); //No ejecutar para pruebas con client
+router.delete('/usuarios/:id/proyectos/:proyecto_id', validarId, verificarToken, deleteProyectoByUsuarioId); //No ejecutar para pruebas con client
 
 // Rutas para transacciones
 router.post('/usuarios/:id/avance', validarId, verificarToken, registroAvanceTransaccion);

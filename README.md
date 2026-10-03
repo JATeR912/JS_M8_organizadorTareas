@@ -198,13 +198,20 @@ http://localhost:3000/ (o utilizando el puerto configurado en tu archivo .env: h
 | **PUT** | `/usuarios/:id/perfil` | Actualiza campos del perfil (`avatar_url`, `telefono`, `sobre_mi`). | `validarId`, `verificarToken`, `updatePerfilByUsuarioId` |
 | **DELETE** | `/usuarios/:id/perfil` | Elimina el perfil de un usuario. | `validarId`, `verificarToken`, `deletePerfilByUsuarioId` |
 
-### 4. Consultas Relacionales y Transacciones
+### 4. Gestión de Proyectos (CRUD Relacional 1:N y Subida de Archivos)
 | Método | Ruta | Descripción | Middleware / Control |
 | :--- | :--- | :--- | :--- |
-| **GET** | `/usuarios/:id/proyectos` | Consulta proyectos vinculados al usuario (Relación 1:N). | `validarId`, `verificarToken`, `getProyectosUsuarioById` |
+| **GET** | `/usuarios/:id/proyectos` | Consulta los proyectos vinculados al usuario. | `validarId`, `verificarToken`, `getProyectosUsuarioById` |
+| **POST** | `/usuarios/:id/proyectos` | Crea un nuevo proyecto e incluye imagen mediante Multer. | `validarId`, `verificarToken`, `uploadFile()`, `postProyecto` |
+| **PUT** | `/usuarios/:id/proyectos/:proyecto_id` | Actualiza campos del proyecto (`titulo`, `descripcion`, `privado`). | `validarId`, `verificarToken`, `updateProyectoByUsuarioId` |
+| **DELETE** | `/usuarios/:id/proyectos/:proyecto_id` | Elimina un proyecto específico perteneciente al usuario. | `validarId`, `verificarToken`, `deleteProyectoByUsuarioId` |
+
+### 5. Consultas y Transacciones SQL
+| Método | Ruta | Descripción | Middleware / Control |
+| :--- | :--- | :--- | :--- |
 | **POST** | `/usuarios/:id/avance` | Registra avance de tarea con transacción nativa (`Client`). | `validarId`, `verificarToken`, `registroAvanceTransaccion` |
 
-### 5. Control de Errores
+### 6. Control de Errores
 | Método | Ruta | Descripción | Respuesta |
 | :--- | :--- | :--- | :--- |
 | **ALL** | `*` | Captura de cualquier ruta no definida. | `getNotFound` (Vista 404 con HBS)|
