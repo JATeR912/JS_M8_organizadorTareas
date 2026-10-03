@@ -28,6 +28,7 @@ El sistema está construido bajo una arquitectura modular, separando responsabil
 │   ├── controllerUsuarioSequelize.js   # Controlador usuarios con ORM Sequelize
 │   ├── controllerPerfilSequelize.js    # Controlador perfiles con ORM Sequelize
 │   ├── controllerProyectoSequelize.js  # Controlador proyectos con ORM Sequelize
+│   ├── controllerTareaSequelize.js     # Controlador tareas con ORM Sequelize
 │   ├── controllerLoginSequelize.js     # Controlador login para inicio de sesion y token con JWT
 │   └── transaccionController.js        # Controlador transaccion con pg.Client
 ├── doc/
