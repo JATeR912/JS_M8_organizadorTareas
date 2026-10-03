@@ -3,6 +3,14 @@ const { registrarErrorLog } = require('../middleware/logger');
 
 async function getPerfilUsuarioById(req, res) {
     const { id } = req.params;
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+    }
 
     try {
         // Obtener el perfil asociado al id de usuario pidiendo atributos específicos de cada modelo (para evitar enviar contraseñas)
@@ -30,6 +38,14 @@ async function getPerfilUsuarioById(req, res) {
 async function postPerfil(req,res) {
     const { id } = req.params;
     const { telefono, sobre_mi } = req.body;
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+    }
 
     try {
         const usuario = await Usuario.findByPk(id);
@@ -68,7 +84,15 @@ async function postPerfil(req,res) {
 async function updatePerfilByUsuarioId(req, res){
     const { id } = req.params;
     const { avatar_url, telefono, sobre_mi } = req.body;
-    
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+    }
+
     try {
         const campos = {};
         const params = []; // Array auxiliar para verificar si se proporcionaron datos para actualizar
@@ -119,6 +143,14 @@ async function updatePerfilByUsuarioId(req, res){
 //Se elimina el usuario, solo por ejemplo de borrado por datos solo se mantendria con activo = false en ususario sin borrado fisico
 async function deletePerfilByUsuarioId(req, res) {
     const { id } = req.params;
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+    }
 
     try {
         const perfil = await Perfil.destroy({ where: { usuario_id: id } });

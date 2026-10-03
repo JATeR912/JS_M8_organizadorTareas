@@ -187,22 +187,22 @@ http://localhost:3000/ (o utilizando el puerto configurado en tu archivo .env: h
 | **POST** | `/usuarios` | Registra un nuevo usuario en la base de datos. | `validarCrearUsuario`, `postUsuario` |
 | **GET** | `/usuarios` | Obtiene el listado completo de usuarios (solo Administrador). | `verificarToken`, `esAdmin`, `getUsuarios` |
 | **GET** | `/usuarios/:id` | Obtiene la información de un usuario específico. | `validarId`, `verificarToken`, `getUsuarioById` |
-| **PUT** | `/usuarios/:id` | Actualiza campos permitidos (`nombre`, `email`) de un usuario. | `validarId`, `validarActualizarUsuario`, `updateUsuarioById` |
-| **DELETE** | `/usuarios/:id` | Elimina un usuario existente por su ID. | `validarId`, `deleteUsuarioById` |
+| **PUT** | `/usuarios/:id` | Actualiza campos permitidos (`nombre`, `email`) de un usuario. | `validarId`, `verificarToken`, `validarActualizarUsuario`, `updateUsuarioById` |
+| **DELETE** | `/usuarios/:id` | Elimina un usuario existente por su ID. | `validarId`, `verificarToken`, `deleteUsuarioById` |
 
 ### 3. Gestión de Perfiles (CRUD Relacional 1:1 y Subida de Archivos)
 | Método | Ruta | Descripción | Middleware / Control |
 | :--- | :--- | :--- | :--- |
-| **GET** | `/usuarios/:id/perfil` | Consulta el perfil asociado a un usuario. | `validarId`, `getPerfilUsuarioById` |
-| **POST** | `/usuarios/:id/perfil` | Crea un nuevo perfil e incrementa el archivo avatar con Multer. | `validarId`, `uploadFile()`, `postPerfil` |
-| **PUT** | `/usuarios/:id/perfil` | Actualiza campos del perfil (`avatar_url`, `telefono`, `sobre_mi`). | `validarId`, `updatePerfilByUsuarioId` |
-| **DELETE** | `/usuarios/:id/perfil` | Elimina el perfil de un usuario. | `validarId`, `deletePerfilByUsuarioId` |
+| **GET** | `/usuarios/:id/perfil` | Consulta el perfil asociado a un usuario. | `validarId`, `verificarToken`, `getPerfilUsuarioById` |
+| **POST** | `/usuarios/:id/perfil` | Crea un nuevo perfil e incrementa el archivo avatar con Multer. | `validarId`, `verificarToken`, `uploadFile()`, `postPerfil` |
+| **PUT** | `/usuarios/:id/perfil` | Actualiza campos del perfil (`avatar_url`, `telefono`, `sobre_mi`). | `validarId`, `verificarToken`, `updatePerfilByUsuarioId` |
+| **DELETE** | `/usuarios/:id/perfil` | Elimina el perfil de un usuario. | `validarId`, `verificarToken`, `deletePerfilByUsuarioId` |
 
 ### 4. Consultas Relacionales y Transacciones
 | Método | Ruta | Descripción | Middleware / Control |
 | :--- | :--- | :--- | :--- |
-| **GET** | `/usuarios/:id/proyectos` | Consulta proyectos vinculados al usuario (Relación 1:N). | `validarId`, `getProyectosUsuarioById` |
-| **POST** | `/usuarios/:id/avance` | Registra avance de tarea con transacción nativa (`Client`). | `validarId`, `registroAvanceTransaccion` |
+| **GET** | `/usuarios/:id/proyectos` | Consulta proyectos vinculados al usuario (Relación 1:N). | `validarId`, `verificarToken`, `getProyectosUsuarioById` |
+| **POST** | `/usuarios/:id/avance` | Registra avance de tarea con transacción nativa (`Client`). | `validarId`, `verificarToken`, `registroAvanceTransaccion` |
 
 ### 5. Control de Errores
 | Método | Ruta | Descripción | Respuesta |

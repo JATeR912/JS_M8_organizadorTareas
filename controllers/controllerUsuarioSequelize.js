@@ -107,7 +107,15 @@ async function getUsuarioById(req, res) {
 async function updateUsuarioById(req, res){
     const { id } = req.params;
     const { nombre, email } = req.body; //Usuarios tienen nombre, email, password, fecha_registro, activo. Por lo tanto fecha registo y activo no tienen que ser actualizados por el usuario y Password tampoco se actualiza desde esta ruta
-    
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+
+    }
     try {
         const campos = {};
         if (nombre !== undefined && nombre !== null && nombre.trim() !== '') {
@@ -141,6 +149,14 @@ async function updateUsuarioById(req, res){
 //Se elimina el usuario, solo por ejemplo de borrado por datos solo se mantendria con activo = false sin borrado fisico
 async function deleteUsuarioById(req, res) {
     const { id } = req.params;
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+    }
 
     try {
         const usuario = await Usuario.destroy({ where: { id } });

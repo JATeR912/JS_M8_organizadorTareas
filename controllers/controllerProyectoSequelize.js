@@ -3,6 +3,14 @@ const { registrarErrorLog } = require('../middleware/logger');
 
 async function getProyectosUsuarioById(req, res) {
     const { id } = req.params;
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+    }
 
     try {
         // Obtener el usuario por su ID y sus proyectos asociados pidiendo atributos específicos de cada modelo (para evitar enviar contraseñas)

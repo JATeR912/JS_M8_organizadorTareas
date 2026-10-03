@@ -5,6 +5,15 @@ const { registrarErrorLog } = require('../middleware/logger');
 async function registroAvanceTransaccion(req, res) {
     const {id} = req.params;
     const {id_tareas} = req.body;
+    const usuarioAutenticadoId = req.usuario.id;
+
+    if (parseInt(id) !== parseInt(usuarioAutenticadoId)) {
+        return res.status(403).json({
+            ok: false,
+            mensaje: 'Acceso denegado: No tienes permisos para ver la información de otro usuario'
+        });
+    }
+    
     const client = new Client({ connectionString: process.env.DATABASE_URL });
     await client.connect();
     try {
